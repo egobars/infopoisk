@@ -3,6 +3,7 @@
 #include <ctime>
 #include <random>
 #include <algorithm>
+#include <cstdio>
 
 std::string GenString(size_t len) {
     std::random_device rd;
@@ -28,16 +29,20 @@ std::vector<std::pair<std::string, std::string>> GenKeyValues(size_t n) {
     return result;
 }
 
-int main() {
+int main(int argc, char* argv[]) {
+    if (argc != 5) {
+        std::cout << "bad args" << std::endl;
+        return 1;
+    }
+
     std::random_device rd;
     std::mt19937 g(rd());
 
-    LSMTree tree(2, 10, 10);
+    LSMTree tree(atoi(argv[2]), atoi(argv[3]), atoi(argv[4]));
 
-    size_t SIZE = 1000000;
+    size_t SIZE = atoi(argv[1]);
 
     auto key_values = GenKeyValues(SIZE);
-    std::cout << "GENERATION END" << std::endl;
 
     clock_t timestamp_start = clock();
     for (auto& kv : key_values) {
@@ -47,7 +52,6 @@ int main() {
     std::cout << "ADD TIME: " << (double) delta / CLOCKS_PER_SEC << " sec" << std::endl;
 
     std::shuffle(key_values.begin(), key_values.end(), g);
-    std::cout << "SHUFFLE END" << std::endl;
 
     timestamp_start = clock();
     for (auto& kv : key_values) {
@@ -58,7 +62,6 @@ int main() {
     std::cout << "GET TIME: " << (double) delta / CLOCKS_PER_SEC << " sec" << std::endl;
 
     std::sort(key_values.begin(), key_values.end());
-    std::cout << "SORT END" << std::endl;
 
     timestamp_start = clock();
     for (size_t i = 0; i < SIZE; ++i) {
